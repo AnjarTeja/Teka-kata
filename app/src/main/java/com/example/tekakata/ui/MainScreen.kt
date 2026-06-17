@@ -30,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -50,6 +52,7 @@ import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.activity.compose.BackHandler
 
 @Composable
 fun MainScreen(
@@ -62,6 +65,8 @@ fun MainScreen(
     var soundEnabled by remember { mutableStateOf(prefsManager.isSoundEnabled()) }
     val highestLevel = prefsManager.getHighestLevel()
     val totalStars = prefsManager.getTotalStars()
+    var showHowToPlay by remember { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "main")
 
@@ -104,6 +109,10 @@ fun MainScreen(
         ),
         label = "handWave"
     )
+
+    BackHandler {
+        showExitDialog = true
+    }
 
     Box(
         modifier = Modifier
@@ -263,16 +272,16 @@ fun MainScreen(
             Spacer(modifier = Modifier.height(14.dp))
 
             Button(
-                onClick = { onNavigateToLevelSelect() },
+                onClick = { showHowToPlay = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor.copy(alpha = 0.8f)),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentCyan.copy(alpha = 0.85f)),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
             ) {
                 Text(
-                    text = "\u2139\uFE0F  TENTANG",
+                    text = "\uD83D\uDCD6  CARA BERMAIN",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -282,7 +291,7 @@ fun MainScreen(
             Spacer(modifier = Modifier.height(14.dp))
 
             Button(
-                onClick = { (context as? Activity)?.finishAffinity() },
+                onClick = { showExitDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -298,5 +307,183 @@ fun MainScreen(
                 )
             }
         }
+    }
+
+    if (showHowToPlay) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showHowToPlay = false },
+            containerColor = Color.Transparent,
+            shape = RoundedCornerShape(28.dp),
+            title = null,
+            text = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(28.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color(0xFFE3F2FD), Color(0xFFF3E5F5))
+                            )
+                        )
+                        .padding(20.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "\uD83D\uDD0D\uD83D\uDCA1", fontSize = 48.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Cara Bermain",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1A237E)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        val steps = listOf(
+                            "\uD83D\uDC46  Seret jari di atas huruf\n    untuk memilih kata",
+                            "\u2714\uFE0F  Lepaskan jari jika sudah\n    menemukan kata yang benar",
+                            "\uD83D\uDCA1  Gunakan tombol PETUNJUK\n    jika merasa kesulitan",
+                            "\u2B50  Semakin sedikit petunjuk,\n    semakin banyak bintang!",
+                            "\uD83D\uDD04  Tombol ULANG untuk mengacak\n    posisi huruf dan mulai lagi"
+                        )
+
+                        steps.forEach { step ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White.copy(alpha = 0.6f))
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = step,
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF37474F),
+                                    lineHeight = 20.sp
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "\uD83D\uDE80  Selamat bermain!  \uD83C\uDF89",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1565C0)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = { showHowToPlay = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                        ) {
+                            Text(
+                                text = "\uD83D\uDC4D  MENGERTI!",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
+    }
+
+    if (showExitDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            containerColor = Color.Transparent,
+            shape = RoundedCornerShape(32.dp),
+            title = null,
+            text = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color(0xFFFFF3E0), Color(0xFFFCE4EC))
+                            )
+                        )
+                        .padding(24.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "\uD83D\uDE22", fontSize = 56.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Yakin Mau Keluar?",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF4A148C)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Progress permainan akan\n tetap tersimpan \uD83D\uDCCB",
+                            fontSize = 14.sp,
+                            color = Color(0xFF5D4037).copy(alpha = 0.8f),
+                            lineHeight = 20.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(28.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { showExitDialog = false },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(54.dp),
+                                shape = RoundedCornerShape(18.dp),
+                                border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFFEF5350).copy(alpha = 0.7f)),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFFEF5350)
+                                )
+                            ) {
+                                Text(
+                                    text = "\uD83D\uDEAB  Tidak",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = Color(0xFFEF5350)
+                                )
+                            }
+                            Button(
+                                onClick = { (context as? Activity)?.finishAffinity() },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(54.dp),
+                                shape = RoundedCornerShape(18.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF43A047)
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+                            ) {
+                                Text(
+                                    text = "\u2705  Ya",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
     }
 }

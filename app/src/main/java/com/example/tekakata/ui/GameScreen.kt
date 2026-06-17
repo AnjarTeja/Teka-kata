@@ -61,6 +61,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tekakata.utils.PreferencesManager
+import com.example.tekakata.utils.SoundManager
 import kotlin.math.sqrt
 
 private fun getCellCol(
@@ -107,20 +108,34 @@ fun GameScreen(
     val lastFoundWord by viewModel.lastFoundWord.collectAsState()
 
     var showResetDialog by remember { mutableStateOf(false) }
+    val soundManager = remember { SoundManager(context) }
 
     LaunchedEffect(levelId) {
         viewModel.initLevel(levelId)
+        val saved = prefsManager.loadLevelProgress(levelId)
+        if (saved != null) {
+            viewModel.restoreProgress(saved.foundWords, saved.hintCount)
+        }
+    }
+
+    LaunchedEffect(foundWords) {
+        if (foundWords.isNotEmpty() && !isLevelComplete) {
+            prefsManager.saveLevelProgress(levelId, foundWords, hintCount)
+        }
     }
 
     LaunchedEffect(lastFoundWord) {
         if (lastFoundWord != null) {
             val view = context.findView() ?: return@LaunchedEffect
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            soundManager.playFound()
         }
     }
 
     LaunchedEffect(showConfetti) {
         if (showConfetti) {
+            soundManager.playComplete()
+            delay(4000)
             delay(4000)
             viewModel.dismissConfetti()
         }
@@ -258,7 +273,7 @@ fun GameScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp)
-                            .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
+                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(
@@ -268,36 +283,36 @@ fun GameScreen(
                                     )
                                 )
                             )
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Text(text = "\uD83D\uDD0E", fontSize = 14.sp)
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = "\uD83D\uDD0E", fontSize = 11.sp)
+                                Spacer(modifier = Modifier.width(3.dp))
                                 Text(
                                     text = "CARI KATA",
-                                    fontSize = 12.sp,
+                                    fontSize = 10.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color.White,
-                                    letterSpacing = 2.sp
+                                    letterSpacing = 1.sp
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = temaEmoji, fontSize = 13.sp)
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(text = temaEmoji, fontSize = 10.sp)
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(3.dp))
                             FlowRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                horizontalArrangement = Arrangement.spacedBy(3.dp, Alignment.CenterHorizontally),
+                                verticalArrangement = Arrangement.spacedBy(3.dp)
                             ) {
                                 currentLevel?.kataKunci?.forEach { word ->
                                     val isFound = word in foundWords
                                     Box(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .clip(RoundedCornerShape(6.dp))
                                             .background(
                                                 if (isFound)
                                                     Brush.linearGradient(listOf(Color(0xFF43A047), Color(0xFF2E7D32)))
@@ -307,12 +322,12 @@ fun GameScreen(
                                             .then(
                                                 if (!isFound) Modifier.background(
                                                     Color.White.copy(alpha = 0.05f),
-                                                    RoundedCornerShape(8.dp)
+                                                    RoundedCornerShape(6.dp)
                                                 ) else Modifier
                                             )
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
+                                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 3.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             if (isFound) {
@@ -320,13 +335,13 @@ fun GameScreen(
                                                     imageVector = Icons.Default.CheckCircle,
                                                     contentDescription = null,
                                                     tint = Color(0xFFC8E6C9),
-                                                    modifier = Modifier.size(11.dp)
+                                                    modifier = Modifier.size(9.dp)
                                                 )
-                                                Spacer(modifier = Modifier.width(3.dp))
+                                                Spacer(modifier = Modifier.width(2.dp))
                                             }
                                             Text(
                                                 text = word,
-                                                fontSize = 11.sp,
+                                                fontSize = 10.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (isFound) Color.White else Color.White.copy(alpha = 0.95f),
                                                 textDecoration = if (isFound) TextDecoration.LineThrough else TextDecoration.None
@@ -505,7 +520,10 @@ fun GameScreen(
                 val hintDisabled = hintCount >= 3
 
                 Button(
-                    onClick = { viewModel.giveHint() },
+                    onClick = {
+                        soundManager.playHint()
+                        viewModel.giveHint()
+                    },
                     enabled = !hintDisabled,
                     modifier = Modifier
                         .weight(1f)
@@ -646,7 +664,9 @@ fun GameScreen(
                             }
                             Button(
                                 onClick = {
+                                    soundManager.playReset()
                                     viewModel.resetAllAnswers()
+                                    prefsManager.clearLevelProgress(levelId)
                                     showResetDialog = false
                                 },
                                 modifier = Modifier
@@ -672,6 +692,7 @@ fun GameScreen(
     }
 
     if (isLevelComplete && currentLevel != null) {
+        prefsManager.clearLevelProgress(levelId)
         prefsManager.saveHighestLevel(levelId + 1)
         prefsManager.saveStarsForLevel(levelId, starRating)
         prefsManager.saveHintsUsedForLevel(levelId, hintCount)

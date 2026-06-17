@@ -3,6 +3,11 @@ package com.example.tekakata.utils
 import android.content.Context
 import android.content.SharedPreferences
 
+data class LevelProgress(
+    val foundWords: Set<String>,
+    val hintCount: Int
+)
+
 class PreferencesManager(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -14,6 +19,8 @@ class PreferencesManager(context: Context) {
         private const val PREFIX_STARS = "STARS_"
         private const val PREFIX_STICKERS = "STICKER_"
         private const val PREFIX_HINTS_USED = "HINTS_USED_"
+        private const val PREFIX_SAVED_WORDS = "SAVED_WORDS_"
+        private const val PREFIX_SAVED_HINTS = "SAVED_HINTS_"
     }
 
     fun getHighestLevel(): Int = prefs.getInt(KEY_HIGHEST_LEVEL, 1)
@@ -61,5 +68,28 @@ class PreferencesManager(context: Context) {
 
     fun getTotalStars(): Int {
         return (1..15).sumOf { getStarsForLevel(it) }
+    }
+
+    fun saveLevelProgress(levelId: Int, foundWords: Set<String>, hintCount: Int) {
+        val encoded = foundWords.joinToString(",")
+        prefs.edit()
+            .putString("$PREFIX_SAVED_WORDS$levelId", encoded)
+            .putInt("$PREFIX_SAVED_HINTS$levelId", hintCount)
+            .apply()
+    }
+
+    fun loadLevelProgress(levelId: Int): LevelProgress? {
+        val encoded = prefs.getString("$PREFIX_SAVED_WORDS$levelId", null) ?: return null
+        val words = if (encoded.isBlank()) emptySet()
+        else encoded.split(",").map { it.trim() }.filter { it.isNotBlank() }.toSet()
+        val hints = prefs.getInt("$PREFIX_SAVED_HINTS$levelId", 0)
+        return LevelProgress(foundWords = words, hintCount = hints)
+    }
+
+    fun clearLevelProgress(levelId: Int) {
+        prefs.edit()
+            .remove("$PREFIX_SAVED_WORDS$levelId")
+            .remove("$PREFIX_SAVED_HINTS$levelId")
+            .apply()
     }
 }

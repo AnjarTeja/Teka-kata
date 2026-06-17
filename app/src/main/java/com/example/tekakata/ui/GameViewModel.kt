@@ -201,7 +201,34 @@ class GameViewModel : ViewModel() {
         _lockedDirection = null
     }
 
+    fun restoreProgress(foundWords: Set<String>, hintsUsed: Int) {
+        val level = _currentLevel.value ?: return
+        if (foundWords.isEmpty()) return
+
+        _foundWords.value = foundWords
+        _hintCount.value = hintsUsed
+
+        val cells = mutableSetOf<Pair<Int, Int>>()
+        for (word in foundWords) {
+            val wordCells = WordSearchEngine.findWordInGrid(
+                _grid.value, word, level.ukuranGrid
+            )
+            if (wordCells != null) {
+                cells.addAll(wordCells)
+            }
+        }
+        _foundCells.value = cells
+
+        if (_foundWords.value.size == level.kataKunci.size) {
+            val stars = calculateStars(_hintCount.value)
+            _starRating.value = stars
+            _isLevelComplete.value = true
+        }
+    }
+
     fun resetAllAnswers() {
+        val level = _currentLevel.value ?: return
+        _grid.value = WordSearchEngine.generateGrid(level.kataKunci, level.ukuranGrid)
         _foundWords.value = emptySet()
         _foundCells.value = emptySet()
         _selectedCells.value = emptyList()
