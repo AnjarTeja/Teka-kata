@@ -6,24 +6,29 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Warna-warna cerah dan ceria untuk anak-anak
-val PrimaryColor = Color(0xFF6C63FF)       // Ungu cerah (playful)
-val SecondaryColor = Color(0xFFFF6B6B)      // Merah coral
-val AccentGreen = Color(0xFF51CF66)         // Hijau segar
-val AccentOrange = Color(0xFFFF922B)        // Oranye ceria
-val AccentYellow = Color(0xFFFFD43B)        // Kuning cerah
-val AccentCyan = Color(0xFF22B8CF)          // Cyan
-val AccentPink = Color(0xFFF06595)          // Pink
-val BackgroundColor = Color(0xFFF8F9FA)     // Abu-abu sangat muda
+val PrimaryColor = Color(0xFF6C63FF)
+val SecondaryColor = Color(0xFFFF6B6B)
+val AccentGreen = Color(0xFF51CF66)
+val AccentOrange = Color(0xFFFF922B)
+val AccentYellow = Color(0xFFFFD43B)
+val AccentCyan = Color(0xFF22B8CF)
+val AccentPink = Color(0xFFF06595)
+val BackgroundColor = Color(0xFFF8F9FA)
 
-// Warna sel grid
-val FoundCellColor = Color(0xFF51CF66)      // Hijau
-val SelectedCellColor = Color(0xFF748FFC)   // Biru lembut
-val HintCellColor = Color(0xFFFFD43B)       // Kuning cerah
+val FoundCellColor = Color(0xFF51CF66)
+val SelectedCellColor = Color(0xFF748FFC)
+val HintCellColor = Color(0xFFFFD43B)
 val CellDefaultColor = Color(0xFFFFFFFF)
 val CellBorderColor = Color(0xFFDEE2E6)
 
-// Warna gradient untuk layar
+val StarColor = Color(0xFFFFD43B)
+val StarEmptyColor = Color(0xFFE0E0E0)
+val ConfettiColors = listOf(
+    Color(0xFFFF6B6B), Color(0xFF4ECDC4), Color(0xFFFFD93D),
+    Color(0xFF6C63FF), Color(0xFFFF922B), Color(0xFF51CF66),
+    Color(0xFFF06595), Color(0xFF45B7D1)
+)
+
 val MainGradientColors = listOf(
     Color(0xFF6C63FF),
     Color(0xFF748FFC),
@@ -32,18 +37,17 @@ val MainGradientColors = listOf(
 )
 
 val GameGradientColors = listOf(
-    Color(0xFFD1C4E9), // ungu lebih pekat
-    Color(0xFFB3E5FC), // biru muda cerah
-    Color(0xFFC8E6C9), // hijau mint
-    Color(0xFFFFF9C4), // kuning pastel cerah
-    Color(0xFFFFCCBC)  // peach/oranye lembut
+    Color(0xFFD1C4E9),
+    Color(0xFFB3E5FC),
+    Color(0xFFC8E6C9),
+    Color(0xFFFFF9C4),
+    Color(0xFFFFCCBC)
 )
 
-// Gradient untuk header TopBar
 val HeaderGradientColors = listOf(
-    Color(0xFF1565C0), // biru tua
-    Color(0xFF1E88E5), // biru medium
-    Color(0xFF42A5F5)  // biru cerah
+    Color(0xFF1565C0),
+    Color(0xFF1E88E5),
+    Color(0xFF42A5F5)
 )
 
 private val LightColorScheme = lightColorScheme(

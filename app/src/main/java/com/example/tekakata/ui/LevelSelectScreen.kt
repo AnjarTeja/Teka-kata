@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tekakata.data.LevelData
@@ -49,35 +52,22 @@ fun LevelSelectScreen(
     val highestLevel = prefsManager.getHighestLevel()
     val totalLevels = LevelData.levels.size
 
-    // Warna-warni kartu level — bergantian
     val cardColors = listOf(
-        listOf(Color(0xFFFF6B6B), Color(0xFFFF8E8E)), // coral
-        listOf(Color(0xFF4ECDC4), Color(0xFF6EE7DE)), // teal
-        listOf(Color(0xFF45B7D1), Color(0xFF67C8DB)), // sky blue
-        listOf(Color(0xFF96CEB4), Color(0xFFB0DEC4)), // sage green
-        listOf(Color(0xFFFFD93D), Color(0xFFFFE66D)), // yellow
-        listOf(Color(0xFF6C63FF), Color(0xFF8B83FF)), // purple
-        listOf(Color(0xFFFF922B), Color(0xFFFFAD5C)), // orange
-        listOf(Color(0xFFF06595), Color(0xFFFF85AB)), // pink
+        listOf(Color(0xFFFF6B6B), Color(0xFFFF8E8E)),
+        listOf(Color(0xFF4ECDC4), Color(0xFF6EE7DE)),
+        listOf(Color(0xFF45B7D1), Color(0xFF67C8DB)),
+        listOf(Color(0xFF96CEB4), Color(0xFFB0DEC4)),
+        listOf(Color(0xFFFFD93D), Color(0xFFFFE66D)),
+        listOf(Color(0xFF6C63FF), Color(0xFF8B83FF)),
+        listOf(Color(0xFFFF922B), Color(0xFFFFAD5C)),
+        listOf(Color(0xFFF06595), Color(0xFFFF85AB)),
     )
 
-    // Emoji untuk setiap level berdasarkan tema
     val levelEmojis = listOf(
-        "\uD83D\uDC31", // 1 Hewan Darat
-        "\uD83C\uDF4E", // 2 Buah
-        "\uD83C\uDFA8", // 3 Warna
-        "\u2744\uFE0F",  // 4 Dingin
-        "\uD83D\uDC1F", // 5 Hewan Laut
-        "\uD83D\uDE97", // 6 Kendaraan
-        "\uD83D\uDC68\u200D\u2695\uFE0F", // 7 Profesi
-        "\uD83C\uDFE0", // 8 Rumah
-        "\uD83C\uDFD4\uFE0F", // 9 Alam
-        "\uD83C\uDF1F", // 10 Campuran
-        "\uD83C\uDF5C", // 11 Makanan
-        "\u26BD",       // 12 Olahraga
-        "\uD83E\uDD85", // 13 Hewan Terbang
-        "\uD83D\uDCDA", // 14 Sekolah
-        "\uD83D\uDE80"  // 15 Luar Angkasa
+        "\uD83D\uDC31", "\uD83C\uDF4E", "\uD83C\uDFA8", "\u2744\uFE0F",
+        "\uD83D\uDC1F", "\uD83D\uDE97", "\uD83D\uDC68\u200D\u2695\uFE0F",
+        "\uD83C\uDFE0", "\uD83C\uDFD4\uFE0F", "\uD83C\uDF1F", "\uD83C\uDF5C",
+        "\u26BD", "\uD83E\uDD85", "\uD83D\uDCDA", "\uD83D\uDE80"
     )
 
     Box(
@@ -119,32 +109,69 @@ fun LevelSelectScreen(
                 }
             }
 
-            // Progress banner
+            // Visual Progress Bar — jalan berbintang
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(horizontal = 12.dp, vertical = 12.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White.copy(alpha = 0.25f))
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .padding(12.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "\uD83C\uDF1F", fontSize = 20.sp)
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text(
-                        text = "Progress: $highestLevel / $totalLevels level",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "\uD83C\uDF1F", fontSize = 18.sp)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Progress: $highestLevel / $totalLevels",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Jalan bintang
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        for (i in 1..totalLevels) {
+                            val isUnlocked = i <= highestLevel
+                            val stars = prefsManager.getStarsForLevel(i)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.width(20.dp)
+                            ) {
+                                Text(
+                                    text = if (isUnlocked) "\u2B50" else "\u2606",
+                                    fontSize = if (stars > 0) 16.sp else 14.sp,
+                                    color = if (isUnlocked) Color(0xFFFFD43B) else Color.White.copy(alpha = 0.3f)
+                                )
+                            }
+                            if (i < totalLevels) {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(4.dp)
+                                        .clip(RoundedCornerShape(2.dp))
+                                        .background(
+                                            if (i < highestLevel) AccentGreen
+                                            else Color.White.copy(alpha = 0.2f)
+                                        )
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
-            // Grid level — scrollable
+            // Grid level
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,6 +184,7 @@ fun LevelSelectScreen(
                     val isUnlocked = level.id <= highestLevel
                     val colorPair = cardColors[index % cardColors.size]
                     val emoji = if (index < levelEmojis.size) levelEmojis[index] else "\u2B50"
+                    val stars = prefsManager.getStarsForLevel(level.id)
 
                     Card(
                         onClick = {
@@ -193,7 +221,6 @@ fun LevelSelectScreen(
                                     .padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Emoji / Ikon
                                 Box(
                                     modifier = Modifier
                                         .size(48.dp)
@@ -218,7 +245,6 @@ fun LevelSelectScreen(
 
                                 Spacer(modifier = Modifier.size(12.dp))
 
-                                // Info level
                                 Column {
                                     Text(
                                         text = "Level ${level.id}",
@@ -231,11 +257,17 @@ fun LevelSelectScreen(
                                         fontSize = 13.sp,
                                         color = if (isUnlocked) Color.White.copy(alpha = 0.85f) else Color.White.copy(alpha = 0.6f)
                                     )
+                                    if (isUnlocked && stars > 0) {
+                                        Text(
+                                            text = "\u2B50".repeat(stars),
+                                            fontSize = 11.sp,
+                                            color = Color(0xFFFFD43B)
+                                        )
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.weight(1f))
 
-                                // Kata count
                                 if (isUnlocked) {
                                     Box(
                                         modifier = Modifier
