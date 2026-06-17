@@ -11,13 +11,24 @@ import com.example.tekakata.ui.GameScreen
 import com.example.tekakata.ui.GameViewModel
 import com.example.tekakata.ui.LevelSelectScreen
 import com.example.tekakata.ui.MainScreen
+import com.example.tekakata.ui.SplashScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "main"
+        startDestination = "splash"
     ) {
+        composable("splash") {
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate("main") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable("main") {
             MainScreen(
                 onNavigateToLevelSelect = {

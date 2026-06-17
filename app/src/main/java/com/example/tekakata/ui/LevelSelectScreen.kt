@@ -167,17 +167,21 @@ fun LevelSelectScreen(
                             .height(72.dp),
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isUnlocked) Color.Transparent else Color.White.copy(alpha = 0.15f)
+                            containerColor = Color.Transparent
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = if (isUnlocked) 6.dp else 2.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .background(
+                                    Brush.horizontalGradient(colors = colorPair),
+                                    RoundedCornerShape(18.dp)
+                                )
                                 .then(
-                                    if (isUnlocked) {
+                                    if (!isUnlocked) {
                                         Modifier.background(
-                                            Brush.horizontalGradient(colors = colorPair),
+                                            Color.Black.copy(alpha = 0.35f),
                                             RoundedCornerShape(18.dp)
                                         )
                                     } else Modifier
@@ -196,7 +200,7 @@ fun LevelSelectScreen(
                                         .clip(RoundedCornerShape(14.dp))
                                         .background(
                                             if (isUnlocked) Color.White.copy(alpha = 0.3f)
-                                            else Color.White.copy(alpha = 0.1f)
+                                            else Color.White.copy(alpha = 0.15f)
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -206,8 +210,8 @@ fun LevelSelectScreen(
                                         Icon(
                                             imageVector = Icons.Default.Lock,
                                             contentDescription = "Terkunci",
-                                            tint = Color.White.copy(alpha = 0.5f),
-                                            modifier = Modifier.size(22.dp)
+                                            tint = Color.White.copy(alpha = 0.7f),
+                                            modifier = Modifier.size(26.dp)
                                         )
                                     }
                                 }
@@ -220,12 +224,12 @@ fun LevelSelectScreen(
                                         text = "Level ${level.id}",
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.ExtraBold,
-                                        color = if (isUnlocked) Color.White else Color.White.copy(alpha = 0.5f)
+                                        color = if (isUnlocked) Color.White else Color.White.copy(alpha = 0.7f)
                                     )
                                     Text(
                                         text = level.tema,
                                         fontSize = 13.sp,
-                                        color = if (isUnlocked) Color.White.copy(alpha = 0.85f) else Color.White.copy(alpha = 0.4f)
+                                        color = if (isUnlocked) Color.White.copy(alpha = 0.85f) else Color.White.copy(alpha = 0.6f)
                                     )
                                 }
 

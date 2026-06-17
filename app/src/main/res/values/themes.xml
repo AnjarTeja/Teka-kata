@@ -1,3 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.TekaKata" parent="@android:style/Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.TekaKata.Splash" parent="Theme.TekaKata">
+        <item name="android:windowBackground">@color/splash_bg</item>
+    </style>
 </resources>
