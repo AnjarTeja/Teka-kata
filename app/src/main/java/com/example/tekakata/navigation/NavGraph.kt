@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.tekakata.ui.GameScreen
 import com.example.tekakata.ui.GameViewModel
+import com.example.tekakata.ui.LevelSelectScreen
 import com.example.tekakata.ui.MainScreen
 
 @Composable
@@ -19,7 +20,21 @@ fun NavGraph(navController: NavHostController) {
     ) {
         composable("main") {
             MainScreen(
+                onNavigateToLevelSelect = {
+                    navController.navigate("levels")
+                },
                 onNavigateToGame = { levelId ->
+                    navController.navigate("game/$levelId")
+                }
+            )
+        }
+
+        composable("levels") {
+            LevelSelectScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToLevel = { levelId ->
                     navController.navigate("game/$levelId")
                 }
             )

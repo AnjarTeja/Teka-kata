@@ -778,7 +778,7 @@ fun GameScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Tombol aksi
-                        if (levelId < 10) {
+                        if (levelId < 15) {
                             Button(
                                 onClick = {
                                     prefsManager.saveHighestLevel(levelId + 1)

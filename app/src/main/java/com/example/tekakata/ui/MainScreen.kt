@@ -44,6 +44,7 @@ import com.example.tekakata.utils.PreferencesManager
 
 @Composable
 fun MainScreen(
+    onNavigateToLevelSelect: () -> Unit,
     onNavigateToGame: (Int) -> Unit
 ) {
     val context = LocalContext.current
@@ -120,7 +121,7 @@ fun MainScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Level tercapai: $highestLevel / 10",
+                        text = "Level tercapai: $highestLevel / 15",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -132,7 +133,7 @@ fun MainScreen(
 
             // Tombol MULAI — besar, hijau cerah
             Button(
-                onClick = { onNavigateToGame(highestLevel) },
+                onClick = { onNavigateToLevelSelect() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),

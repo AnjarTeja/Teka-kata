@@ -68,6 +68,36 @@ object LevelData {
             tema = "Campuran",
             kataKunci = listOf("BINTANG", "ROKET", "SINGA", "MATAHARI", "BUMI", "BULAN", "KOMET"),
             ukuranGrid = 10
+        ),
+        Level(
+            id = 11,
+            tema = "Makanan",
+            kataKunci = listOf("NASI", "ROTI", "SOTO", "BAKSO", "MIE", "TEMPE", "TAHU", "SATE"),
+            ukuranGrid = 10
+        ),
+        Level(
+            id = 12,
+            tema = "Olahraga",
+            kataKunci = listOf("BOLA", "TENIS", "RENANG", "LARI", "SEPAK", "BULU", "TANGKIS"),
+            ukuranGrid = 10
+        ),
+        Level(
+            id = 13,
+            tema = "Hewan Terbang",
+            kataKunci = listOf("ELANG", "RAJAWALI", "MERPATI", "BEO", "GAGAK", "BURUNG", "KELELAWAR"),
+            ukuranGrid = 11
+        ),
+        Level(
+            id = 14,
+            tema = "Sekolah",
+            kataKunci = listOf("PENSIL", "BUKU", "PAPAN", "KELAS", "GURU", "MURID", "TAS", "PENA"),
+            ukuranGrid = 11
+        ),
+        Level(
+            id = 15,
+            tema = "Luar Angkasa",
+            kataKunci = listOf("PLANET", "BINTANG", "KOMET", "GALAKSI", "NEBULA", "SATELIT", "ASTRONOT", "ROKET"),
+            ukuranGrid = 11
         )
     )
 
