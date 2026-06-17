@@ -1,0 +1,56 @@
+package com.example.tekakata.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.tekakata.ui.GameScreen
+import com.example.tekakata.ui.GameViewModel
+import com.example.tekakata.ui.MainScreen
+
+@Composable
+fun NavGraph(navController: NavHostController) {
+    NavHost(
+        navController = navController,
+        startDestination = "main"
+    ) {
+        composable("main") {
+            MainScreen(
+                onNavigateToGame = { levelId ->
+                    navController.navigate("game/$levelId")
+                }
+            )
+        }
+
+        composable(
+            route = "game/{levelId}",
+            arguments = listOf(
+                navArgument("levelId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val levelId = backStackEntry.arguments?.getInt("levelId") ?: 1
+            val gameViewModel: GameViewModel = viewModel()
+
+            GameScreen(
+                levelId = levelId,
+                viewModel = gameViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToLevel = { nextLevel ->
+                    navController.navigate("game/$nextLevel") {
+                        popUpTo("main")
+                    }
+                },
+                onNavigateToMain = {
+                    navController.navigate("main") {
+                        popUpTo("main") { inclusive = true }
+                    }
+                }
+            )
+        }
+    }
+}
